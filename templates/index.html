@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Sentinel — Asystent Jakości Kodu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="brand">
+                <span class="logo">🛡️</span>
+                <div>
+                    <h1>QA Sentinel</h1>
+                    <p class="tagline">Asystent jakości kodu napędzany przez Gemini</p>
+                </div>
+            </div>
+            <p class="header-desc">
+                Wklej fragment kodu — agent AI wykryje błędy, luki bezpieczeństwa
+                i zaproponuje konkretne poprawki oraz scenariusze testowe.
+            </p>
+        </header>
+
+        <main class="layout">
+            <!-- Panel wejściowy -->
+            <section class="panel input-panel">
+                <div class="panel-head">
+                    <h2>Kod do analizy</h2>
+                    <select id="language" class="lang-select" title="Język (opcjonalnie)">
+                        <option value="">Wykryj automatycznie</option>
+                        <option value="Python">Python</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="TypeScript">TypeScript</option>
+                        <option value="Java">Java</option>
+                        <option value="C#">C#</option>
+                        <option value="C++">C++</option>
+                        <option value="Go">Go</option>
+                        <option value="PHP">PHP</option>
+                        <option value="SQL">SQL</option>
+                    </select>
+                </div>
+
+                <textarea id="code" class="code-input" spellcheck="false"
+                    placeholder="// Wklej tutaj swój kod...&#10;def divide(a, b):&#10;    return a / b"></textarea>
+
+                <div class="actions">
+                    <button id="sampleBtn" class="btn btn-ghost" type="button">Wstaw przykład</button>
+                    <button id="clearBtn" class="btn btn-ghost" type="button">Wyczyść</button>
+                    <button id="analyzeBtn" class="btn btn-primary" type="button">
+                        <span class="btn-label">Analizuj kod</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Panel wyników -->
+            <section class="panel output-panel">
+                <div class="panel-head">
+                    <h2>Raport jakości</h2>
+                </div>
+
+                <!-- Stan pusty -->
+                <div id="emptyState" class="empty-state">
+                    <span class="empty-icon">🔍</span>
+                    <p>Wynik analizy pojawi się tutaj.</p>
+                </div>
+
+                <!-- Loader -->
+                <div id="loader" class="loader hidden">
+                    <div class="spinner"></div>
+                    <p>QA Sentinel analizuje kod…</p>
+                </div>
+
+                <!-- Komunikat błędu -->
+                <div id="errorBox" class="error-box hidden"></div>
+
+                <!-- Wyniki -->
+                <div id="results" class="results hidden">
+                    <div class="score-row">
+                        <div class="score-ring" id="scoreRing">
+                            <span id="scoreValue">0</span>
+                            <small>/100</small>
+                        </div>
+                        <div class="score-meta">
+                            <span class="lang-badge" id="langBadge">—</span>
+                            <p id="summary" class="summary-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <h3>Wykryte problemy <span id="issuesCount" class="count">0</span></h3>
+                        <div id="issuesList" class="issues-list"></div>
+                    </div>
+
+                    <div class="result-section">
+                        <h3>Sugerowane testy <span id="testsCount" class="count">0</span></h3>
+                        <div id="testsList" class="tests-list"></div>
+                    </div>
+
+                    <div class="result-section" id="improvedSection">
+                        <div class="improved-head">
+                            <h3>Poprawiony kod</h3>
+                            <button id="copyBtn" class="btn btn-ghost btn-small" type="button">Kopiuj</button>
+                        </div>
+                        <pre class="improved-code"><code id="improvedCode"></code></pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Powered by Google Gemini · Flask · Stworzone dla testerów oprogramowania</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
