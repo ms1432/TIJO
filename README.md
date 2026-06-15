@@ -1,4 +1,4 @@
-# 🛡️ Asystent Kodu — Analiza Jakości
+# ☻ Asystent Kodu — Analiza Jakości
 
 Aplikacja webowa wspierająca pracę testera oprogramowania. Wykorzystuje
 **API Google Gemini** do analizy fragmentów kodu: wykrywa błędy, luki

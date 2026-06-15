@@ -26,6 +26,7 @@ const els = {
     testsCount: document.getElementById("testsCount"),
     improvedSection: document.getElementById("improvedSection"),
     improvedCode: document.getElementById("improvedCode"),
+    verifyBadge: document.getElementById("verifyBadge"),
 };
 
 const SAMPLE = `def get_user_discount(users, user_id):
@@ -177,6 +178,39 @@ function renderTests(tests) {
         .join("");
 }
 
+/** Zwraca podświetlony kod jako HTML (preferuje wskazany język, w razie potrzeby zgaduje). */
+function highlightToHtml(code, langLabel) {
+    if (!window.hljs) return escapeHtml(code);
+    const langKey = LANG_MAP[langLabel];
+    if (langKey && hljs.getLanguage(langKey)) {
+        return hljs.highlight(code, { language: langKey }).value;
+    }
+    return hljs.highlightAuto(code).value;
+}
+
+/** Pokazuje wynik automatycznej weryfikacji poprawionego kodu (lub chowa plakietkę). */
+function renderVerifyBadge(verification) {
+    const badge = els.verifyBadge;
+    if (!verification) {
+        badge.classList.add("hidden");
+        return;
+    }
+    const score = verification.quality_score;
+    if (verification.has_blockers) {
+        badge.className = "verify-badge warn";
+        badge.textContent =
+            score != null
+                ? `⚠ zweryfikowano: ${score}/100, wciąż są poważne uwagi`
+                : "⚠ zweryfikowano: wciąż są poważne uwagi";
+    } else {
+        badge.className = "verify-badge ok";
+        badge.textContent =
+            score != null
+                ? `√ zweryfikowano przez AI: ${score}/100`
+                : "√ zweryfikowano przez AI";
+    }
+}
+
 function renderResults(data) {
     animateScore(Number(data.quality_score) || 0);
     els.langBadge.textContent = data.language || "Nieznany";
@@ -186,7 +220,10 @@ function renderResults(data) {
     renderTests(Array.isArray(data.test_cases) ? data.test_cases : []);
 
     if (data.improved_code && data.improved_code.trim()) {
-        els.improvedCode.textContent = data.improved_code;
+        // Podświetlanie składni (motyw VS Code) jak w edytorze i kodzie testów.
+        els.improvedCode.className = "hljs";
+        els.improvedCode.innerHTML = highlightToHtml(data.improved_code, data.language);
+        renderVerifyBadge(data.improved_verification);
         els.improvedSection.classList.remove("hidden");
     } else {
         els.improvedSection.classList.add("hidden");

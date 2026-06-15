@@ -880,6 +880,20 @@ body {
 
 .improved-head h3 { margin-bottom: 0; }
 
+.verify-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 2px 7px;
+    color: #fff;
+    vertical-align: middle;
+}
+
+.verify-badge.ok { background: var(--green); }
+.verify-badge.warn { background: var(--orange); }
+
 .improved-code {
     background: var(--sunken-bg);
     padding: 10px 12px;
@@ -892,6 +906,8 @@ body {
 }
 
 .improved-code code {
+    padding: 0;
+    background: transparent;
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1.5;

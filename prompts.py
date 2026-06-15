@@ -154,13 +154,23 @@ Jesteś instruktorem programowania przygotowującym materiały do nauki przeglą
 Twoim zadaniem jest wygenerowanie KRÓTKIEGO, ale REALISTYCZNEGO fragmentu ZŁEGO kodu
 we wskazanym języku — takiego, jaki początkujący programista mógłby naprawdę napisać.
 
+POZIOM JAKOŚCI (NAJWAŻNIEJSZE): kod ma być "KRYTYCZNY" wg naszej skali, czyli taki,
+który w analizie dostałby quality_score w przedziale 0–29 i miałby co najmniej jedno
+znalezisko o istotności "krytyczny".
+- "Krytyczny" = wada, która prowadzi do realnej katastrofy: poważna luka bezpieczeństwa
+  (SQL/command injection, zdalne wykonanie kodu, ujawnienie/twarde zakodowanie sekretów,
+  brak uwierzytelnienia przy operacji wrażliwej), utrata lub uszkodzenie danych,
+  pewny crash/wyjątek na typowej ścieżce, albo błąd logiczny dający błędne wyniki finansowe.
+- Kod MUSI zawierać MINIMUM JEDNĄ taką wadę krytyczną — wpleć ją naturalnie, nie sygnalizuj.
+
 WYMAGANIA WZGLĘDEM WYGENEROWANEGO KODU:
 - Długość 10–25 linii, jedna spójna funkcja/klasa lub mały skrypt z konkretnym celem.
-- Ma zawierać 3–5 RÓŻNYCH, autentycznych wad ukrytych w działającym z pozoru kodzie, np.:
-  błąd logiczny, nieobsłużony przypadek brzegowy (null/None, dzielenie przez zero, pusta lista),
-  lukę bezpieczeństwa (SQL injection, brak walidacji wejścia, twarde hasło),
-  wyciek zasobu, złe nazewnictwo, porównania typu `== True`, brak obsługi wyjątków.
-- Kod musi być składniowo poprawny i wyglądać wiarygodnie (nie karykaturalnie).
+- Oprócz wady krytycznej dodaj jeszcze 2–4 RÓŻNE, autentyczne wady (wysokie/średnie/niskie),
+  np.: błąd logiczny, nieobsłużony przypadek brzegowy (null/None, dzielenie przez zero,
+  pusta lista), wyciek zasobu, brak walidacji wejścia, porównania typu `== True`,
+  brak obsługi wyjątków, złe nazewnictwo.
+- Kod musi być składniowo poprawny i wyglądać wiarygodnie (nie karykaturalnie) — wada
+  krytyczna ma być UKRYTA w sensownie wyglądającym kodzie, a nie oczywistym absurdem.
 - Używaj idiomów i konwencji właściwych dla wybranego języka.
 
 ABSOLUTNY ZAKAZ KOMENTARZY (NAJWAŻNIEJSZA ZASADA):
