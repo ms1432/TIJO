@@ -3,34 +3,34 @@
    Fazowane krawędzie 3D, szare okna, paski tytułu, Tahoma.
    ========================================================= */
 :root {
-    /* Powierzchnie i tekst */
-    --desktop: #0a2424;          /* pulpit (przyciemniony klasyczny teal) */
-    --face: #313131;             /* "blacha" okien i przycisków */
-    --face-2: #3a3a3a;           /* nieco jaśniejsza powierzchnia */
-    --sunken-bg: #1e1e1e;        /* wnętrze pól tekstowych / kodu */
-    --text: #e6e6e6;
-    --text-dim: #9a9a9a;
-    --text-disabled: #6f6f6f;
+    /* Powierzchnie i tekst — oryginalna, jasna paleta Windows 95 */
+    --desktop: #008080;          /* klasyczny turkusowy pulpit */
+    --face: #c0c0c0;             /* srebrnoszara "blacha" okien i przycisków */
+    --face-2: #c0c0c0;
+    --sunken-bg: #ffffff;        /* białe wnętrze pól tekstowych / kodu */
+    --text: #000000;             /* czarny tekst */
+    --text-dim: #404040;
+    --text-disabled: #808080;
 
-    /* Krawędzie 3D (cztery odcienie jak w Win95, odwrócone dla ciemnego motywu) */
-    --hl-inner: #7c7c7c;         /* najjaśniejsza (góra-lewo, wewn.) */
-    --hl-outer: #5c5c5c;         /* jasna (góra-lewo, zewn.) */
-    --sh-inner: #1c1c1c;         /* ciemna (dół-prawo, wewn.) */
-    --sh-outer: #000000;         /* najciemniejsza (dół-prawo, zewn.) */
+    /* Krawędzie 3D (cztery klasyczne odcienie Windows 95) */
+    --hl-inner: #ffffff;         /* najjaśniejsza — biała (góra-lewo, wewn.) */
+    --hl-outer: #dfdfdf;         /* jasnoszara (góra-lewo, zewn.) */
+    --sh-inner: #808080;         /* szara (dół-prawo, wewn.) */
+    --sh-outer: #000000;         /* czarna (dół-prawo, zewn.) */
 
-    /* Pasek tytułu (kultowy niebieski gradient, lekko przyciemniony) */
-    --title-a: #00007b;
-    --title-b: #1064a8;
+    /* Pasek tytułu (kultowy granatowo-niebieski gradient) */
+    --title-a: #000080;
+    --title-b: #1084d0;
     --title-text: #ffffff;
-    --title-inactive: #4a4a4a;
+    --title-inactive: #808080;
 
-    /* Kolory znaczeń (poziomy istotności) */
-    --green: #5aab78;
-    --amber: #c9a83a;
-    --orange: #c8853f;
-    --red: #d05a55;
+    /* Kolory znaczeń (poziomy istotności) — czytelne na jasnym tle */
+    --green: #2e8b57;
+    --amber: #b8860b;
+    --orange: #c1640a;
+    --red: #c0392b;
 
-    --mono: "Lucida Console", "Consolas", "Courier New", monospace;
+    --mono: "Consolas", "Courier New", "Lucida Console", monospace;
 }
 
 /* Faza wypukła (raised) — okna, przyciski w spoczynku */
@@ -308,7 +308,7 @@ body {
     resize: none;
     background: transparent;
     color: transparent;
-    caret-color: #ffffff;
+    caret-color: #000000;
     outline: none;
 }
 
@@ -517,7 +517,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 14px;
-    background: rgba(20, 20, 20, 0.82);
+    background: rgba(192, 192, 192, 0.9);
     color: var(--text);
     font-size: 13px;
     font-family: var(--mono);
@@ -784,8 +784,8 @@ body {
 
 .sev-tag.krytyczny { background: var(--red); }
 .sev-tag.wysoki { background: var(--orange); }
-.sev-tag.średni { background: var(--amber); color: #1a1a1a; }
-.sev-tag.niski { background: var(--green); color: #1a1a1a; }
+.sev-tag.średni { background: var(--amber); }
+.sev-tag.niski { background: var(--green); }
 
 .issue-title {
     font-weight: 700;
@@ -811,7 +811,7 @@ body {
         inset 2px 2px 0 var(--sh-inner);
 }
 
-.issue-fix strong { color: #fff; }
+.issue-fix strong { color: #000080; }
 
 /* =========================================================
    Testy
@@ -895,7 +895,7 @@ body {
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1.5;
-    color: #d7d7d7;
+    color: #000000;
     white-space: pre;
 }
 
