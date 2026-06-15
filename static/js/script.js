@@ -1,10 +1,13 @@
 /* =========================================================
-   QA Sentinel — logika frontendu
+   Asystent Kodu — logika frontendu
    ========================================================= */
 
 const els = {
     code: document.getElementById("code"),
+    highlight: document.getElementById("highlight"),
     language: document.getElementById("language"),
+    instructions: document.getElementById("instructions"),
+    editorLoader: document.getElementById("editorLoader"),
     analyzeBtn: document.getElementById("analyzeBtn"),
     clearBtn: document.getElementById("clearBtn"),
     sampleBtn: document.getElementById("sampleBtn"),
@@ -37,6 +40,53 @@ function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str ?? "";
     return div.innerHTML;
+}
+
+/* ---------- Podświetlanie składni (kolory jak w VS Code) ---------- */
+
+/** Mapuje etykietę z listy języków na identyfikator highlight.js. */
+const LANG_MAP = {
+    Python: "python",
+    JavaScript: "javascript",
+    TypeScript: "typescript",
+    Java: "java",
+    "C#": "csharp",
+    "C++": "cpp",
+    Go: "go",
+    PHP: "php",
+    SQL: "sql",
+};
+
+/** Pre będący kontenerem przewijania warstwy podświetlenia. */
+const highlightPre = els.highlight.parentElement;
+
+/** Synchronizuje przewijanie warstwy podświetlenia z polem tekstowym. */
+function syncScroll() {
+    highlightPre.scrollTop = els.code.scrollTop;
+    highlightPre.scrollLeft = els.code.scrollLeft;
+}
+
+/** Renderuje podświetlony kod pod przezroczystym polem tekstowym. */
+function highlightCode() {
+    const code = els.code.value;
+    let html;
+
+    if (window.hljs) {
+        const langKey = LANG_MAP[els.language.value];
+        if (langKey && hljs.getLanguage(langKey)) {
+            html = hljs.highlight(code, { language: langKey }).value;
+        } else {
+            // "Wykryj automatycznie" — niech highlight.js zgadnie język
+            html = hljs.highlightAuto(code).value;
+        }
+    } else {
+        // CDN niedostępny — pokaż przynajmniej czysty (bezpieczny) tekst
+        html = escapeHtml(code);
+    }
+
+    // Dodatkowy znak nowej linii utrzymuje wysokość ostatniej (pustej) linii.
+    els.highlight.innerHTML = html + "\n";
+    syncScroll();
 }
 
 /** Przełącza widoczne stany panelu wyników. */
@@ -110,13 +160,20 @@ function renderTests(tests) {
         return;
     }
     els.testsList.innerHTML = tests
-        .map(
-            (t) => `
+        .map((t) => {
+            const code = (t.code || "").trim();
+            const codeBlock = code
+                ? `<pre class="test-code"><code class="hljs">${
+                      window.hljs ? hljs.highlightAuto(code).value : escapeHtml(code)
+                  }</code></pre>`
+                : "";
+            return `
             <div class="test-card">
                 <div class="test-name">${escapeHtml(t.name || "Scenariusz testowy")}</div>
                 <p class="test-desc">${escapeHtml(t.description || "")}</p>
-            </div>`
-        )
+                ${codeBlock}
+            </div>`;
+        })
         .join("");
 }
 
@@ -152,7 +209,11 @@ async function analyze() {
         const res = await fetch("/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code, language: els.language.value }),
+            body: JSON.stringify({
+                code,
+                language: els.language.value,
+                instructions: els.instructions.value.trim(),
+            }),
         });
         const data = await res.json();
 
@@ -171,15 +232,69 @@ async function analyze() {
 /* ---------- Zdarzenia ---------- */
 els.analyzeBtn.addEventListener("click", analyze);
 
+// Podświetlanie na żywo podczas pisania/wklejania i przewijania.
+els.code.addEventListener("input", highlightCode);
+els.code.addEventListener("scroll", syncScroll);
+els.language.addEventListener("change", highlightCode);
+
 els.clearBtn.addEventListener("click", () => {
     els.code.value = "";
+    highlightCode();
     showState("empty");
     els.code.focus();
 });
 
-els.sampleBtn.addEventListener("click", () => {
-    els.code.value = SAMPLE;
-    els.code.focus();
+/** Ustawia listę języków, jeśli zwrócony język pasuje do dostępnej opcji. */
+function setLanguageIfKnown(lang) {
+    if (!lang) return;
+    const match = [...els.language.options].find(
+        (o) => o.value.toLowerCase() === String(lang).toLowerCase()
+    );
+    if (match) els.language.value = match.value;
+}
+
+// "Wstaw przykład" — AI generuje przykładowy zły kod w wybranym języku.
+els.sampleBtn.addEventListener("click", async () => {
+    const original = els.sampleBtn.textContent;
+    els.sampleBtn.disabled = true;
+    els.sampleBtn.textContent = "Generuję…";
+    els.editorLoader.classList.remove("hidden"); // animacja generowania w edytorze
+    try {
+        const res = await fetch("/sample", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ language: els.language.value }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showError(data.error || "Nie udało się wygenerować przykładu.");
+            return;
+        }
+        els.code.value = data.code || SAMPLE;
+        setLanguageIfKnown(data.language);
+        highlightCode();
+        els.code.focus();
+    } catch {
+        // Brak połączenia — wstaw lokalny przykład awaryjny.
+        els.code.value = SAMPLE;
+        els.language.value = "Python";
+        highlightCode();
+        els.code.focus();
+    } finally {
+        els.editorLoader.classList.add("hidden");
+        els.sampleBtn.disabled = false;
+        els.sampleBtn.textContent = original;
+    }
+});
+
+// Tab wstawia wcięcie zamiast przenosić fokus (zachowanie jak w edytorze).
+els.code.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    e.preventDefault();
+    const { selectionStart: start, selectionEnd: end, value } = els.code;
+    els.code.value = value.slice(0, start) + "    " + value.slice(end);
+    els.code.selectionStart = els.code.selectionEnd = start + 4;
+    highlightCode();
 });
 
 els.copyBtn.addEventListener("click", async () => {
@@ -199,3 +314,6 @@ els.code.addEventListener("keydown", (e) => {
         analyze();
     }
 });
+
+// Pierwsze renderowanie (np. gdy przeglądarka przywróci tekst po odświeżeniu).
+highlightCode();

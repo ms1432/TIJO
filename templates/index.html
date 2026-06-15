@@ -3,33 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Sentinel — Asystent Jakości Kodu</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Asystent Kodu — Analiza Jakości</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="app">
-        <header class="header">
-            <div class="brand">
-                <span class="logo">🛡️</span>
-                <div>
-                    <h1>QA Sentinel</h1>
-                    <p class="tagline">Asystent jakości kodu napędzany przez Gemini</p>
+        <header class="header window">
+            <div class="titlebar">
+                <span class="titlebar-text"><span class="logo">🛡️</span> AsystentKodu.exe — Analiza Jakości</span>
+                <div class="title-controls" aria-hidden="true">
+                    <span>_</span><span>□</span><span>✕</span>
                 </div>
             </div>
-            <p class="header-desc">
-                Wklej fragment kodu — agent AI wykryje błędy, luki bezpieczeństwa
-                i zaproponuje konkretne poprawki oraz scenariusze testowe.
-            </p>
+            <div class="window-body">
+                <h1 class="header-title">Asystent Kodu</h1>
+                <p class="tagline">Inteligentny recenzent kodu napędzany modelem Google Gemini</p>
+                <p class="header-desc">
+                    <strong>Asystent Kodu</strong> to narzędzie do błyskawicznego przeglądu jakości
+                    oprogramowania. Wklej dowolny fragment kodu, a agent AI wcieli się w rolę
+                    doświadczonego inżyniera QA: przeanalizuje go pod kątem błędów logicznych,
+                    przypadków brzegowych i luk bezpieczeństwa, sprawdzi zgodność z dobrymi
+                    praktykami (SOLID, DRY, KISS), wystawi ocenę jakości w skali 0–100, a na koniec
+                    zaproponuje gotowe poprawki oraz scenariusze testowe w schemacie AAA.
+                </p>
+                <p class="header-desc">
+                    Działa z <strong>dowolnym językiem i paradygmatem</strong> — od Pythona, przez
+                    Javę i JavaScript, po SQL. Cała analiza powstaje po stronie AI, więc dostajesz
+                    profesjonalny raport w kilka sekund i jednym kliknięciem. Nie wiesz, od czego
+                    zacząć? Skorzystaj z przycisku <em>„Wstaw przykład"</em>, aby wygenerować kod
+                    z ukrytymi błędami do przećwiczenia.
+                </p>
+
+                <!-- Wyeksponowanie specjalizacji agenta -->
+                <ul class="capabilities" aria-label="Możliwości agenta">
+                    <li>🐛 Błędy i przypadki brzegowe</li>
+                    <li>🔒 Audyt bezpieczeństwa</li>
+                    <li>🧱 Zasady SOLID i wzorce</li>
+                    <li>🧪 Testy w schemacie AAA</li>
+                    <li>📊 Ocena jakości 0–100</li>
+                    <li>🌐 Każdy język i paradygmat</li>
+                </ul>
+            </div>
         </header>
 
         <main class="layout">
             <!-- Panel wejściowy -->
-            <section class="panel input-panel">
+            <section class="panel window input-panel">
                 <div class="panel-head">
                     <h2>Kod do analizy</h2>
+                    <div class="title-controls" aria-hidden="true">
+                        <span>_</span><span>□</span><span>✕</span>
+                    </div>
+                </div>
+
+                <div class="window-body">
+                <div class="toolbar">
+                    <label class="toolbar-label" for="language">Język:</label>
                     <select id="language" class="lang-select" title="Język (opcjonalnie)">
                         <option value="">Wykryj automatycznie</option>
                         <option value="Python">Python</option>
@@ -44,8 +74,24 @@
                     </select>
                 </div>
 
-                <textarea id="code" class="code-input" spellcheck="false"
-                    placeholder="// Wklej tutaj swój kod...&#10;def divide(a, b):&#10;    return a / b"></textarea>
+                <div class="editor" id="editor">
+                    <pre class="editor-highlight" aria-hidden="true"><code id="highlight" class="hljs"></code></pre>
+                    <textarea id="code" class="code-input" spellcheck="false" wrap="soft"
+                        autocapitalize="off" autocorrect="off" autocomplete="off"
+                        placeholder="// Wklej tutaj swój kod...&#10;def divide(a, b):&#10;    return a / b"></textarea>
+                    <div class="editor-loader hidden" id="editorLoader">
+                        <div class="gen-text">Generuję przykładowy kod<span class="dots"></span></div>
+                        <div class="progress"></div>
+                    </div>
+                </div>
+
+                <div class="extra">
+                    <label for="instructions" class="extra-label">
+                        Dodatkowe wytyczne dla agenta <span>(opcjonalnie)</span>
+                    </label>
+                    <textarea id="instructions" class="extra-input" rows="2"
+                        placeholder="np. Skup się na bezpieczeństwie · Testy w JUnit 5 · Oceniaj pod kątem zgodności z PEP 8"></textarea>
+                </div>
 
                 <div class="actions">
                     <button id="sampleBtn" class="btn btn-ghost" type="button">Wstaw przykład</button>
@@ -54,13 +100,41 @@
                         <span class="btn-label">Analizuj kod</span>
                     </button>
                 </div>
+                </div>
             </section>
 
             <!-- Panel wyników -->
-            <section class="panel output-panel">
+            <section class="panel window output-panel">
                 <div class="panel-head">
                     <h2>Raport jakości</h2>
+                    <div class="title-controls" aria-hidden="true">
+                        <span>_</span><span>□</span><span>✕</span>
+                    </div>
                 </div>
+
+                <div class="window-body">
+                <!-- Adnotacja: na jakiej podstawie agent ocenia kod -->
+                <details class="rubric">
+                    <summary>Na jakiej podstawie oceniam kod?</summary>
+                    <div class="rubric-body">
+                        <p>Ocena <strong>0–100</strong> powstaje z pięciu kategorii o stałych wagach
+                        (agent zaczyna od maksimum i odejmuje punkty za realne uchybienia):</p>
+                        <ul class="rubric-list">
+                            <li><span class="rubric-cat">Poprawność i niezawodność</span><span class="rubric-pts">35 pkt</span></li>
+                            <li><span class="rubric-cat">Bezpieczeństwo</span><span class="rubric-pts">20 pkt</span></li>
+                            <li><span class="rubric-cat">Czytelność i utrzymywalność <em>(SOLID, DRY, KISS)</em></span><span class="rubric-pts">20 pkt</span></li>
+                            <li><span class="rubric-cat">Wydajność i zasoby</span><span class="rubric-pts">15 pkt</span></li>
+                            <li><span class="rubric-cat">Testowalność</span><span class="rubric-pts">10 pkt</span></li>
+                        </ul>
+                        <p class="rubric-note">Kara za znalezisko zależy od istotności:
+                        <span class="sev-tag krytyczny">krytyczny</span>
+                        <span class="sev-tag wysoki">wysoki</span>
+                        <span class="sev-tag średni">średni</span>
+                        <span class="sev-tag niski">niski</span></p>
+                        <p class="rubric-note">Przedziały: 90–100 jakość produkcyjna · 70–89 dobry ·
+                        50–69 wymaga poprawek · 30–49 poważne braki · 0–29 krytycznie wadliwy.</p>
+                    </div>
+                </details>
 
                 <!-- Stan pusty -->
                 <div id="emptyState" class="empty-state">
@@ -70,8 +144,8 @@
 
                 <!-- Loader -->
                 <div id="loader" class="loader hidden">
-                    <div class="spinner"></div>
-                    <p>QA Sentinel analizuje kod…</p>
+                    <div class="progress"></div>
+                    <p>Asystent analizuje kod<span class="dots"></span></p>
                 </div>
 
                 <!-- Komunikat błędu -->
@@ -108,6 +182,7 @@
                         <pre class="improved-code"><code id="improvedCode"></code></pre>
                     </div>
                 </div>
+                </div>
             </section>
         </main>
 
@@ -116,6 +191,7 @@
         </footer>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

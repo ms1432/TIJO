@@ -1,4 +1,4 @@
-# 🛡️ QA Sentinel — Asystent Jakości Kodu
+# 🛡️ Asystent Kodu — Analiza Jakości
 
 Aplikacja webowa wspierająca pracę testera oprogramowania. Wykorzystuje
 **API Google Gemini** do analizy fragmentów kodu: wykrywa błędy, luki
@@ -12,7 +12,7 @@ Zbudowana w oparciu o **Python + Flask** (backend) oraz **HTML + CSS + JavaScrip
 ## ✨ Funkcje
 
 - **Analiza kodu jednym kliknięciem** — wklej kod, resztę robi agent AI.
-- **Wyrafinowany prompt** — model wciela się w rolę eksperta QA ("QA Sentinel")
+- **Wyrafinowany prompt** — model wciela się w rolę eksperta QA ("Asystent Kodu")
   i zwraca ustrukturyzowany raport.
 - **Ocena jakości 0–100** z czytelnym wskaźnikiem.
 - **Lista problemów** z poziomem istotności (krytyczny / wysoki / średni / niski).
