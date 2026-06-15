@@ -23,6 +23,10 @@ load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip()
 
+# Limit (w sekundach) na POJEDYNCZE wywołanie API Gemini. Można nadpisać w .env.
+# Domyślnie podniesiony, bo analiza + automatyczna samopoprawa robi kilka wywołań.
+REQUEST_TIMEOUT = int(os.getenv("GEMINI_TIMEOUT", "180"))
+
 GEMINI_URL = (
     f"https://generativelanguage.googleapis.com/v1beta/models/"
     f"{MODEL_NAME}:generateContent"
@@ -166,7 +170,7 @@ def call_gemini(system_prompt: str, user_prompt: str, temperature: float = 0.2) 
         GEMINI_URL,
         headers={"Content-Type": "application/json", "X-goog-api-key": API_KEY},
         json=payload,
-        timeout=60,
+        timeout=REQUEST_TIMEOUT,
     )
     resp.raise_for_status()
     candidates = resp.json().get("candidates", [])
